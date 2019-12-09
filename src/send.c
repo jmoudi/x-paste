@@ -6,13 +6,21 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h> 
 
-static char    *progname       = NULL;
+/* static char    *progname       = NULL;
 static char    *displayname    = NULL;
 static Window   window         = 0;
 static Display *display        = NULL;
 static char     keyname[1024];
 static int      shift          = 0;
 static int      keysym         = 0;
+static int debug = 1; */
+static char *progname = NULL;
+static char *displayname = NULL;
+static Window window = 0;
+static Display *display = NULL;
+static char keyname[1024];
+static int shift = 0;
+static int keysym = 0;
 static int debug = 1;
 
 int	MyErrorHandler(Display *my_display, XErrorEvent *event)
@@ -49,20 +57,6 @@ XKeyEvent createEvent(){
 void SendKeyPressedEvent(KeySym keysym, unsigned int shift)
 {
     XKeyEvent event = createEvent();
-  /*   XKeyEvent		event;
-    event.display	= display;
-    event.window	= window;
-    event.root		= RootWindow(display, 0); // XXX nonzero screens?
-    event.subwindow	= None;
-    event.time		= CurrentTime;
-    event.x		= 1;
-    event.y		= 1;
-    event.x_root	= 1;
-    event.y_root	= 1;
-    event.same_screen	= True;
-    event.type		= KeyPress;
-    event.state		= 0;  */ 
-
     //
     // press down shift keys one at a time...
     //
@@ -128,32 +122,8 @@ void SendKeyPressedEvent(KeySym keysym, unsigned int shift)
         event.state &= ~meta_mask;
     } */
 }
- 
-int	main(int argc, char **argv)
-{
-    keysym = 0;
-    shift  = 0;
-    char *argval = NULL;
-    int ii, Junk;
-    //int ii;
-  /*   for (ii=1; ii<argc; ii++) {
-        argval = argv[ii];
-        printf("argv %s", ii);
-        printf("argv %d", argv[ii]);
-        printf("argval %d", argval);
-        
-    }  
-    for (int i = 0; i < argc; i++) {
-        //argval = argv[i];
-        printf("argv %s", i);
-        printf("argv %d", argv[i]);
-        //printf("argval %d", argval);
-        
-    }  */
-    printf("argv %d", argv[0]);
-    printf("argv %d", argv[1]);
-    printf("argv %d", argv[2]);
 
+void getDisplay(char *displayname){
     if(displayname == NULL){
 	    displayname = getenv("DISPLAY");
     }
@@ -161,6 +131,24 @@ int	main(int argc, char **argv)
     if(displayname == NULL){
 	    displayname = ":0.0";
     }
+    //return displayname;
+    //return display
+}
+ 
+int	DoSend()
+{
+    keysym = 0;
+    shift  = 0;
+    char *argval = NULL;
+    int ii, Junk;
+    getDisplay(displayname);
+/*     if(displayname == NULL){
+	    displayname = getenv("DISPLAY");
+    }
+
+    if(displayname == NULL){
+	    displayname = ":0.0";
+    } */
     display = XOpenDisplay(displayname);
 
     if(window == 0){
@@ -179,6 +167,25 @@ int	main(int argc, char **argv)
     SendKeyPressedEvent(keysym, shift);
 
     XCloseDisplay(display);
-
+    //exit(0);
     return 0;
 }
+
+
+
+//parseArgs(){}
+    //int ii;
+  /*   for (ii=1; ii<argc; ii++) {
+        argval = argv[ii];
+        printf("argv %s", ii);
+        printf("argv %d", argv[ii]);
+        printf("argval %d", argval);
+        
+    }  
+    for (int i = 0; i < argc; i++) {
+        //argval = argv[i];
+        printf("argv %s", i);
+        printf("argv %d", argv[i]);
+        //printf("argval %d", argval);
+        
+    }  */
