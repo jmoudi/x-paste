@@ -6,14 +6,6 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h> 
 
-/* static char    *progname       = NULL;
-static char    *displayname    = NULL;
-static Window   window         = 0;
-static Display *display        = NULL;
-static char     keyname[1024];
-static int      shift          = 0;
-static int      keysym         = 0;
-static int debug = 1; */
 static char *progname = NULL;
 static char *displayname = NULL;
 static Window window = 0;
@@ -23,16 +15,14 @@ static int shift = 0;
 static int keysym = 0;
 static int debug = 1;
 
-int	MyErrorHandler(Display *my_display, XErrorEvent *event)
-{
+int	ErrorHandler(Display *my_display, XErrorEvent *event){
     fprintf(stderr, "%s: XSendEvent(0x%lx) failed.\n", progname, window);
     return 1;
 }
 
-void SendEvent(XKeyEvent *event)
-{
+void SendEvent(XKeyEvent *event){
     XSync(display, False);
-    XSetErrorHandler(MyErrorHandler);
+    XSetErrorHandler(ErrorHandler);
     XSendEvent(display, window, True, KeyPressMask, (XEvent*)event);
     XSync(display, False);
     XSetErrorHandler(NULL);
@@ -54,38 +44,52 @@ XKeyEvent createEvent(){
     event.state		= 0;
     return event;
 }
-void SendKeyPressedEvent(KeySym keysym, unsigned int shift)
-{
-    XKeyEvent event = createEvent();
-    //
-    // press down shift keys one at a time...
-    //
 
-/*      if (shift & ShiftMask) {
+
+void PressShift(){
+    /*      if (shift & ShiftMask) {
 	    event.keycode = XKeysymToKeycode(display, XK_Shift_L);
         printf("SHIFT %d", event.keycode);
 	    SendEvent(&event);
 	    event.state |= ShiftMask;
     } */
-    //if (shift & ControlMask) {
+}
+void PressControl(){
+    /*    
+    if (shift & ControlMask) {
         event.keycode = XKeysymToKeycode(display, XK_Control_L);
         //printf("ControlMask %d", event.keycode);
         SendEvent(&event);
         event.state |= ControlMask;
     //}
-/*      if (shift & Mod1Mask) {
+    */
+}
+void PressAlt(){
+    /*      
+if (shift & Mod1Mask) {
         event.keycode = XKeysymToKeycode(display, XK_Alt_L);
         SendEvent(&event);
         event.state |= Mod1Mask;
     }
+    */
+}
+void PressMeta(){
+    /*    
     if (shift & meta_mask) {
         event.keycode = XKeysymToKeycode(display, XK_Meta_L);
         SendEvent(&event);
         event.state |= meta_mask;
-    } */
+    }
+    */
+}
 
-    //printf("CCCCCv %d", event.keycode);
-    
+void SendKeyPressedEvent(KeySym keysym, unsigned int shift){
+    XKeyEvent event = createEvent();
+
+    event.keycode = XKeysymToKeycode(display, XK_Control_L);
+    SendEvent(&event);
+    event.state |= ControlMask;
+   
     //  Now with shift keys held down, send event for the key itself...
     // fprintf(stderr, "sym: 0x%x, name: %s\n", keysym, keyname);
     if (keysym != NoSymbol) {
@@ -134,6 +138,17 @@ void getDisplay(char *displayname){
     //return displayname;
     //return display
 }
+void getWindow(char *displayname){
+    if(displayname == NULL){
+	    displayname = getenv("DISPLAY");
+    }
+
+    if(displayname == NULL){
+	    displayname = ":0.0";
+    }
+    //return displayname;
+    //return display
+}
  
 int	DoSend()
 {
@@ -142,13 +157,6 @@ int	DoSend()
     char *argval = NULL;
     int ii, Junk;
     getDisplay(displayname);
-/*     if(displayname == NULL){
-	    displayname = getenv("DISPLAY");
-    }
-
-    if(displayname == NULL){
-	    displayname = ":0.0";
-    } */
     display = XOpenDisplay(displayname);
 
     if(window == 0){
@@ -160,14 +168,9 @@ int	DoSend()
 
     shift |= ControlMask;
     keysym = XK_V;
-/*      */
-
-    //printf("argv %d", argv[2]);
-    printf("keysym %d", keysym);
     SendKeyPressedEvent(keysym, shift);
-
     XCloseDisplay(display);
-    //exit(0);
+    //XFree();
     return 0;
 }
 

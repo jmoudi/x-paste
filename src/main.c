@@ -15,7 +15,7 @@ int	main(int argc, char **argv){
     printf("argv %d", argv[2]);
     DoSend();
 
-
+    fprintf(stdout, "dsdfdgdfgfdg");
     exit(0);
     return 0;
 }

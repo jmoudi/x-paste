@@ -2,3 +2,6 @@ examples
 lib
 test
 .idea.md
+*.o
+
+test2
