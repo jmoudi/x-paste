@@ -1,7 +1,9 @@
 examples
 lib
-test
 .idea.md
 *.o
-
-test2
+.notes
+conf.yml
+__ignored__
+externals
+dist
